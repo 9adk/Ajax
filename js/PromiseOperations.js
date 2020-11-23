@@ -1,8 +1,9 @@
 let XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-function makePromiseCall(methodType, url, callback, async = true, data = null) {
+function makePromiseCall(methodType, url, callback, async = true, data) {
     return new Promise(function (resolve, reject) {
         let xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
+        // xhr.onreadystatechange = function () {
+        xhr.onload = function(){
             if (xhr.status.toString().match('^[2][0-9]{2}$')) {
                 resolve(xhr.responseText);
             }
@@ -13,6 +14,12 @@ function makePromiseCall(methodType, url, callback, async = true, data = null) {
                 });
                 console.log("XHR Failed");
             }
+        }
+        xhr.onerror = function(){
+            reject({
+                status: xhr.status,
+                statusText: xhr.statusText
+            });
         }
         xhr.open(methodType, url, async);
         if (data) {
